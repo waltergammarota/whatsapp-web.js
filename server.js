@@ -1,5 +1,8 @@
 const fs = require("fs");
-const { Client, Location } = require("./index");
+const {
+    Client,
+    Location
+} = require("./index");
 
 const SESSION_FILE_PATH = "./session.json";
 let sessionCfg;
@@ -8,7 +11,9 @@ if (fs.existsSync(SESSION_FILE_PATH)) {
 }
 
 const client = new Client({
-    puppeteer: { headless: false },
+    puppeteer: {
+        headless: true
+    },
     session: sessionCfg,
 });
 // You can use an existing session and avoid scanning a QR code by adding a "session" object to the client options.
@@ -252,7 +257,10 @@ client.on("group_update", (notification) => {
 
 client.on("change_battery", (batteryInfo) => {
     // Battery percentage for attached device has changed
-    const { battery, plugged } = batteryInfo;
+    const {
+        battery,
+        plugged
+    } = batteryInfo;
     console.log(`Battery: ${battery}% - Charging? ${plugged}`);
 });
 
