@@ -1,8 +1,7 @@
 const fs = require("fs");
-const {
-    Client,
-    Location
-} = require("./index");
+const { Client, Location } = require("./index");
+var express = require("express");
+var app = express();
 
 const SESSION_FILE_PATH = "./session.json";
 let sessionCfg;
@@ -13,7 +12,7 @@ if (fs.existsSync(SESSION_FILE_PATH)) {
 const client = new Client({
     puppeteer: {
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
     },
     session: sessionCfg,
 });
@@ -44,6 +43,17 @@ client.on("auth_failure", (msg) => {
 
 client.on("ready", () => {
     console.log("READY");
+
+    app.get("/msg", function (req, res) {
+        let { msg, number } = req.query;
+        number = number.includes("@c.us") ? number : `${number}@c.us`;
+        client.sendMessage(number, msg);
+        res.send("Sent!");
+    });
+
+    app.listen(3000, function () {
+        console.log("Example app listening on port 3000!");
+    });
 });
 
 client.on("message", async (msg) => {
@@ -258,10 +268,7 @@ client.on("group_update", (notification) => {
 
 client.on("change_battery", (batteryInfo) => {
     // Battery percentage for attached device has changed
-    const {
-        battery,
-        plugged
-    } = batteryInfo;
+    const { battery, plugged } = batteryInfo;
     console.log(`Battery: ${battery}% - Charging? ${plugged}`);
 });
 
